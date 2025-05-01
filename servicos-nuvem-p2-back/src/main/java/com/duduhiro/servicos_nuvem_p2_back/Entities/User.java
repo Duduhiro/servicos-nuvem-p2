@@ -29,6 +29,8 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    public User() {}
+
     public Long getId() {
         return id;
     }
