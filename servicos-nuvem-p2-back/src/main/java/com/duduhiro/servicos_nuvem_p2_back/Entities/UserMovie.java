@@ -15,6 +15,10 @@ public class UserMovie {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
