@@ -29,6 +29,8 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    public User() {}
+
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;

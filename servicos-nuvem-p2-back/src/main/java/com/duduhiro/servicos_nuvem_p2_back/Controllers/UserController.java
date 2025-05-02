@@ -1,12 +1,11 @@
 package com.duduhiro.servicos_nuvem_p2_back.Controllers;
 
+import com.duduhiro.servicos_nuvem_p2_back.DTOs.AuthResponse;
+import com.duduhiro.servicos_nuvem_p2_back.DTOs.LoginRequest;
 import com.duduhiro.servicos_nuvem_p2_back.DTOs.RegisterRequest;
 import com.duduhiro.servicos_nuvem_p2_back.Services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,6 +21,17 @@ public class UserController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         userService.register(request);
         return ResponseEntity.ok("User registered successfully");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        String token = userService.login(request);
+        return ResponseEntity.ok(new AuthResponse(token, "Login successful"));
+    }
+
+    @GetMapping("/{userId}/watchlist")
+    public ResponseEntity<?> getUserWatchList(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getWatchlist(userId));
     }
 
 }

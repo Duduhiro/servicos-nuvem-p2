@@ -8,9 +8,11 @@ import com.duduhiro.servicos_nuvem_p2_back.Jwt.JwtUtil;
 import com.duduhiro.servicos_nuvem_p2_back.Repos.UserMovieRepository;
 import com.duduhiro.servicos_nuvem_p2_back.Repos.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserService {
 
     private final UserRepository userRepo;
