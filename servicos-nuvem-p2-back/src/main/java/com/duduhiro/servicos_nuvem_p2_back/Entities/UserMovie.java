@@ -36,12 +36,27 @@ public class UserMovie {
 
     public UserMovie() {}
 
+    public UserMovie(User user, Movie movie, Double userRating, Boolean watched) {
+        this.user = user;
+        this.movie = movie;
+        this.userRating = userRating;
+        this.watched = watched;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Movie getMovie() {
