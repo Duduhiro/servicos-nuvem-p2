@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Card, CardContent, CardFooter } from "./card"
-import { Star } from "lucide-react"
+import { BookmarkPlus, Star } from "lucide-react"
 import { Button } from "./button"
 
 interface MovieCardProps {
@@ -14,7 +14,7 @@ interface MovieCardProps {
 export default function MovieCard({ id, title, image, rating, watched = false}: MovieCardProps) {
 
     return (
-        <Card className="overflow-hidden max-w-2xs min-w-3xs gap-2 bg-background p-0">
+        <Card className="overflow-hidden max-w-xs min-w-64 grow aspect-[6/11] gap-2 bg-background p-0">
             <CardContent className="p-0">
                 <div className="relative aspect-[2/3] w-full overflow-hidden">
                     <Image 
@@ -36,8 +36,9 @@ export default function MovieCard({ id, title, image, rating, watched = false}: 
                 </div>
                 <div className="mt-2 flex w-full items-center justify-between">
                     <div>
-                        <Button variant="ghost" size="sm" className="h-8 px-2">
-                            Details
+                        <Button variant="outline" size="sm" className="h-8 px-2">
+                            <BookmarkPlus className="h-4 w-4" />
+                            Add to List
                         </Button>
                     </div>
                 </div>

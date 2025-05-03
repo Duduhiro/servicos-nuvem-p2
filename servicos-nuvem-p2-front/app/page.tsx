@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
 import MovieCard from "@/components/ui/movie-card";
+import MovieFeatured from "@/components/ui/movie-featured";
 import { BookmarkPlus, Search, User } from "lucide-react";
 import Link from "next/link";
 
@@ -46,7 +48,14 @@ export default function Home() {
         </header>
         <main className="flex items-center justify-center">
             <div className="max-w-7xl w-full pt-5">
-                <div className="flex justify-between flex-wrap gap-2">
+                <h1 className="text-3xl font-bold mb-5">Featured Movies</h1>
+                <FeaturedMovies />
+                <h1 className="text-3xl font-bold my-5">Popular now</h1>
+                <div className="flex start flex-wrap gap-4">
+                    <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
+                    <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
+                    <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
+                    <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
@@ -56,4 +65,24 @@ export default function Home() {
         </main>
     </div>
   );
+}
+
+function FeaturedMovies() {
+    return (
+        <Carousel className="mb-4">
+            <CarouselContent>
+                <CarouselItem>
+                    <MovieFeatured id={1} title="Dune: Part One" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
+                </CarouselItem>
+                <CarouselItem>
+                    <MovieFeatured id={1} title="Dune: Part Two" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
+                </CarouselItem>
+                <CarouselItem>
+                    <MovieFeatured id={1} title="Dune: Part Three" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
+                </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext/>
+        </Carousel>
+    )
 }
