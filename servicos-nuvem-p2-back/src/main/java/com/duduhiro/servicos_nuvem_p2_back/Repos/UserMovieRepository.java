@@ -11,6 +11,9 @@ public interface UserMovieRepository extends JpaRepository<UserMovie, Long> {
 
     List<UserMovie> findByUserId(Long userId);
 
+    @Query("SELECT um.movie.id FROM UserMovie um WHERE um.user.id = :userId")
+    List<Long> findMovieIdsByUserId(@Param("userId") Long userId);
+
     @Query("""
         SELECT um FROM UserMovie um
         WHERE um.user.id = :userId

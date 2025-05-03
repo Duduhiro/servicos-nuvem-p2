@@ -77,4 +77,42 @@ public class TmdbService {
             throw new RuntimeException("Failed to fetch movie details from TMDb");
         }
     }
+
+    private List<Movie> fetchMoviesFromTmdb(String url) {
+        ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
+        List<Movie> movies = new ArrayList<>();
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            JsonNode results = response.getBody().get("results");
+
+            for (JsonNode node : results) {
+                Movie movie = new Movie();
+                movie.setTmdbId(node.get("id").asLong());
+                movie.setTitle(node.get("title").asText(""));
+                movie.setDescription(node.get("overview").asText(""));
+                movie.setPosterUrl("https://image.tmdb.org/t/p/w500" + node.get("poster_path").asText(""));
+                movie.setRating(node.get("vote_average").asDouble());
+
+                String release = node.get("release_date").asText("");
+                if (!release.isEmpty()) {
+                    movie.setReleaseDate(LocalDate.parse(release));
+                }
+
+                movie.setCreatedAt(LocalDateTime.now());
+                movie.setLastFetchedAt(LocalDateTime.now());
+                movies.add(movie);
+            }
+        }
+        return movies;
+    }
+
+    public List<Movie> fetchPopularMovies() {
+        String url = String.format("%s/movie/popular?api_key=%s", apiUrl, apiKey);
+        return fetchMoviesFromTmdb(url);
+    }
+
+    public List<Movie> fetchTrendingMovies() {
+        String url = String.format("%s/trending/movie/week?api_key=%s", apiUrl, apiKey);
+        return fetchMoviesFromTmdb(url);
+    }
 }
