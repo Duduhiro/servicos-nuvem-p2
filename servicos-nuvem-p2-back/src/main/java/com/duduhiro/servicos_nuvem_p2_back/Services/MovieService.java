@@ -26,7 +26,7 @@ public class MovieService {
         List<Movie> existing = movieRepo.findByTitleContainingIgnoreCase(title);
 
         boolean needsUpdate = existing.isEmpty() ||
-                existing.stream().anyMatch(m -> m.getLastFetchedAt().isBefore(LocalDateTime.now().minusDays(1)));
+                existing.stream().anyMatch(m -> m.getLastFetchedAt().isBefore(LocalDateTime.now().minusMinutes(1)));
 
         if (needsUpdate) {
 
@@ -40,6 +40,7 @@ public class MovieService {
                     update.setRating(m.getRating());
                     update.setDescription(m.getDescription());
                     update.setPosterUrl(m.getPosterUrl());
+                    update.setReleaseDate(m.getReleaseDate());
                     update.setLastFetchedAt(LocalDateTime.now());
                     movieRepo.save(update);
                 } else {

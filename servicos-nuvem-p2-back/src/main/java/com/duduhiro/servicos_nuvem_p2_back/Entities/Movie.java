@@ -2,6 +2,7 @@ package com.duduhiro.servicos_nuvem_p2_back.Entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,9 @@ public class Movie {
     private Double rating;
 
     private String posterUrl;
+
+    @Column(name = "release_date")
+    private LocalDate releaseDate;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -89,6 +93,14 @@ public class Movie {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public LocalDateTime getCreatedAt() {
