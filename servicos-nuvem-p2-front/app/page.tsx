@@ -7,17 +7,6 @@ import { BookmarkPlus, Search, User } from "lucide-react";
 import Link from "next/link";
 
 
-const movies = [
-    {
-        id: 1,
-        title: "Dune Part Two",
-        image: "/placeholder.png",
-        rating: 4.8,
-        watched: false
-    }
-]
-
-
 export default function Home() {
   return (
     <div>
@@ -47,7 +36,7 @@ export default function Home() {
             </div>
         </header>
         <main className="flex items-center justify-center">
-            <div className="max-w-7xl w-full pt-5">
+            <div className="max-w-7xl w-full py-5">
                 <h1 className="text-3xl font-bold mb-5">Featured Movies</h1>
                 <FeaturedMovies />
                 <h1 className="text-3xl font-bold my-5">Popular now</h1>
@@ -56,6 +45,9 @@ export default function Home() {
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
+                </div>
+                <h1 className="text-3xl font-bold my-5">Popular all time</h1>
+                <div className="flex start flex-wrap gap-4">
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                     <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />

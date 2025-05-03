@@ -25,8 +25,7 @@ export default function MovieCard({ id, title, image, rating, watched = false}: 
                     />
                     <div className="absolute right-2 top-2 flex items-center rounded-full bg-black/70 px-2 py-1 text-xs z-10">
                         <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
-                        {/* {rating} */}
-                        4.8
+                        {rating}
                     </div>
                 </div>
             </CardContent>
