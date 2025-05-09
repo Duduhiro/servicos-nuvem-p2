@@ -43,12 +43,10 @@ public class TmdbService {
                 movie.setDescription(node.get("overview").asText(""));
                 movie.setPosterUrl("https://image.tmdb.org/t/p/w500" + node.get("poster_path").asText(""));
                 movie.setRating(node.get("vote_average").asDouble());
-
                 String release = node.get("release_date").asText();
                 if (!release.isEmpty()) {
                     movie.setReleaseDate(LocalDate.parse(release, formatter));
                 }
-
                 movie.setCreatedAt(LocalDateTime.now());
                 movie.setLastFetchedAt(LocalDateTime.now());
                 movies.add(movie);

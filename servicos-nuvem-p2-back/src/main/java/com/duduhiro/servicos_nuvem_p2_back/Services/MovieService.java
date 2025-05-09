@@ -31,6 +31,7 @@ public class MovieService {
         boolean needsUpdate = existing.isEmpty() ||
                 existing.stream().anyMatch(m -> m.getLastFetchedAt().isBefore(LocalDateTime.now().minusHours(1)));
 
+
         if (needsUpdate) {
 
             List<Movie> fresh = tmdbService.searchMoviesFromApi(title);
