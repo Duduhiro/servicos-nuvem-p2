@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TmdbService {
@@ -114,4 +115,10 @@ public class TmdbService {
         String url = String.format("%s/trending/movie/week?api_key=%s", apiUrl, apiKey);
         return fetchMoviesFromTmdb(url);
     }
+
+    public List<Movie> fetchTopRatedMovies() {
+        String url = String.format("%s/movie/top_rated?api_key=%s&page=1", apiUrl, apiKey);
+        return fetchMoviesFromTmdb(url).stream().limit(20).collect(Collectors.toList());
+    }
+
 }

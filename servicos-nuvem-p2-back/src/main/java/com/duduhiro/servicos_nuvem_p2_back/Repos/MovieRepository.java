@@ -26,7 +26,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             @Param("watchedIds") List<Long> watchedIds
     );
 
-    List<Movie> findTop4ByRatingGreaterThanOrderByRatingDesc(double minRating);
+    @Query("""
+        SELECT m FROM Movie m
+        ORDER BY m.rating DESC
+    """)
+    List<Movie> findTop4ByRatingGreaterThanOrderByRatingDesc(@Param("minRating") double minRating);
 
     default Movie saveOrUpdateByTmdbId(Movie movie) {
         return findByTmdbId(movie.getTmdbId())

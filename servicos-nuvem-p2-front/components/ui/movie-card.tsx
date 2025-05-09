@@ -14,7 +14,7 @@ interface MovieCardProps {
 export default function MovieCard({ id, title, image, rating, watched = false}: MovieCardProps) {
 
     return (
-        <Card className="overflow-hidden max-w-xs min-w-64 grow aspect-[6/11] gap-2 bg-background p-0">
+        <Card className="overflow-hidden w-[24%] aspect-[6/11] gap-2 bg-background p-0">
             <CardContent className="p-0">
                 <div className="relative aspect-[2/3] w-full overflow-hidden">
                     <Image 

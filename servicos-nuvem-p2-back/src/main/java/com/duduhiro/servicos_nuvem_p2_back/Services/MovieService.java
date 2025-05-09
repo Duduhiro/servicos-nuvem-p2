@@ -62,7 +62,7 @@ public class MovieService {
     public List<Movie> getPopularMovies() {
         return tmdbService.fetchPopularMovies().stream()
                 .map(movieRepo::saveOrUpdateByTmdbId)
-                .limit(3)
+                .limit(5)
                 .collect(Collectors.toList());
     }
 
@@ -74,12 +74,18 @@ public class MovieService {
     }
 
     public List<Movie> getAtemporalMovies(User user) {
+        List<Movie> topRatedMovies = tmdbService.fetchTopRatedMovies().stream()
+                .map(movieRepo::saveOrUpdateByTmdbId)
+                .collect(Collectors.toList());
 
         if (user == null) {
-            return movieRepo.findTop4ByRatingGreaterThanOrderByRatingDesc(8.0);
+            return topRatedMovies.stream().limit(20).collect(Collectors.toList());
         }
 
-        List<Long> watchedMoviesId = userMovieRepo.findMovieIdsByUserId(user.getId());
-        return movieRepo.findTop4ByRatingGreaterThanAndIdNotInOrderByRatingDesc(8.0, watchedMoviesId);
+        List<Long> watchedIds = userMovieRepo.findMovieIdsByUserId(user.getId());
+        return topRatedMovies.stream()
+                .filter(movie -> !watchedIds.contains(movie.getId()))
+                .limit(20)
+                .collect(Collectors.toList());
     }
 }
