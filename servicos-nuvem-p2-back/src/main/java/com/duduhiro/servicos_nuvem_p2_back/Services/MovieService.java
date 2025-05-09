@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -44,6 +45,7 @@ public class MovieService {
                     update.setRating(m.getRating());
                     update.setDescription(m.getDescription());
                     update.setPosterUrl(m.getPosterUrl());
+                    update.setBackdropUrl(m.getBackdropUrl());
                     update.setReleaseDate(m.getReleaseDate());
                     update.setLastFetchedAt(LocalDateTime.now());
                     movieRepo.save(update);
@@ -58,19 +60,17 @@ public class MovieService {
     }
 
     public List<Movie> getPopularMovies() {
-        List<Movie> fetched = tmdbService.fetchPopularMovies();
-        for (Movie movie : fetched) {
-            movieRepo.saveOrUpdateByTmdbId(movie);
-        }
-        return fetched.stream().limit(3).toList();
+        return tmdbService.fetchPopularMovies().stream()
+                .map(movieRepo::saveOrUpdateByTmdbId)
+                .limit(3)
+                .collect(Collectors.toList());
     }
 
     public List<Movie> getTrendingMovies() {
-        List<Movie> fetched = tmdbService.fetchTrendingMovies();
-        for (Movie movie : fetched) {
-            movieRepo.saveOrUpdateByTmdbId(movie);
-        }
-        return fetched.stream().limit(4).toList();
+        return tmdbService.fetchTrendingMovies().stream()
+                .map(movieRepo::saveOrUpdateByTmdbId)
+                .limit(4)
+                .collect(Collectors.toList());
     }
 
     public List<Movie> getAtemporalMovies(User user) {

@@ -25,6 +25,7 @@ public class Movie {
     private Double rating;
 
     private String posterUrl;
+    private String backdropUrl;
 
     @Column(name = "release_date")
     private LocalDate releaseDate;
@@ -94,6 +95,14 @@ public class Movie {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
     }
 
     public LocalDate getReleaseDate() {

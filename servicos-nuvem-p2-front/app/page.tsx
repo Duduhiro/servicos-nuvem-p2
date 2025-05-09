@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
@@ -5,12 +7,31 @@ import MovieCard from "@/components/ui/movie-card";
 import MovieFeatured from "@/components/ui/movie-featured";
 import { BookmarkPlus, Search, User } from "lucide-react";
 import Link from "next/link";
-import { getPopular, getTrending } from "@/app/services/get-movies";
+import { getPopular, getTrending, Movie } from "@/app/services/get-movies";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
+export default function Home() {
   
     // const popular = await getPopular();
     // const trending = await getTrending();
+
+    const [movies, setMovies] = useState<Movie[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadMovies = async () => {
+            try {
+                const data = await getPopular();
+                setMovies(data);
+            } catch (error) {
+                console.error("Error fetching movies:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadMovies();
+
+    }, []);
 
     return (
         <div>
@@ -42,14 +63,9 @@ export default async function Home() {
             <main className="flex items-center justify-center">
                 <div className="max-w-7xl w-full py-5">
                     <h1 className="text-3xl font-bold mb-5">Featured Movies</h1>
-                    <FeaturedMovies />
+                    <FeaturedMovies movies={movies} />
                     <h1 className="text-3xl font-bold my-5">Popular now</h1>
                     <div className="flex start flex-wrap gap-4">
-                        {/* {
-                            popular.map(movie => {
-                                <MovieCard id={movie.id} title={movie.title} image="/placeholder.png" rating={movie.rating} watched={false} />
-                            })
-                        } */}
                         <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                         <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
                         <MovieCard id={1} title="Dune: Part Two" image="/placeholder.png" rating={4.8} watched={true} />
@@ -68,19 +84,17 @@ export default async function Home() {
     );
 }
 
-function FeaturedMovies() {
+function FeaturedMovies({movies}: {movies: Movie[]}) {
     return (
         <Carousel className="mb-4">
             <CarouselContent>
-                <CarouselItem>
-                    <MovieFeatured id={1} title="Dune: Part One" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
-                </CarouselItem>
-                <CarouselItem>
-                    <MovieFeatured id={1} title="Dune: Part Two" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
-                </CarouselItem>
-                <CarouselItem>
-                    <MovieFeatured id={1} title="Dune: Part Three" image="/placeholder_h.png" description="Description" rating={4.8} watched={true} />
-                </CarouselItem>
+            {
+                movies.map((movie) => (
+                    <CarouselItem key={movie.id}>
+                        <MovieFeatured id={movie.id} title={movie.title} description={movie.description} image={movie.backdropUrl || '/placerholder.png'} rating={parseFloat(movie.rating.toFixed(1))} watched={false} />
+                    </CarouselItem>
+                ))
+            }
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext/>

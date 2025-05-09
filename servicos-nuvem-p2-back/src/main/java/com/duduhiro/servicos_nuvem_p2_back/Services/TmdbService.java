@@ -89,6 +89,7 @@ public class TmdbService {
                 movie.setTitle(node.get("title").asText(""));
                 movie.setDescription(node.get("overview").asText(""));
                 movie.setPosterUrl("https://image.tmdb.org/t/p/w500" + node.get("poster_path").asText(""));
+                movie.setBackdropUrl("https://image.tmdb.org/t/p/w1280" + node.get("backdrop_path").asText(""));
                 movie.setRating(node.get("vote_average").asDouble());
 
                 String release = node.get("release_date").asText("");

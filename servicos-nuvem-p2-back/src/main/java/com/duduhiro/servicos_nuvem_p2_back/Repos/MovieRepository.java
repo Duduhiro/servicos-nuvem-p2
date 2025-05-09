@@ -34,6 +34,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
                     existing.setTitle(movie.getTitle());
                     existing.setDescription(movie.getDescription());
                     existing.setPosterUrl(movie.getPosterUrl());
+                    existing.setBackdropUrl(movie.getBackdropUrl());
                     existing.setRating(movie.getRating());
                     existing.setReleaseDate(movie.getReleaseDate());
                     existing.setLastFetchedAt(LocalDateTime.now());

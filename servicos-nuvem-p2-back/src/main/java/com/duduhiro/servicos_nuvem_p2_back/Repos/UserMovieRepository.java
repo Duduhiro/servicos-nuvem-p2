@@ -1,5 +1,7 @@
 package com.duduhiro.servicos_nuvem_p2_back.Repos;
 
+import com.duduhiro.servicos_nuvem_p2_back.Entities.Movie;
+import com.duduhiro.servicos_nuvem_p2_back.Entities.User;
 import com.duduhiro.servicos_nuvem_p2_back.Entities.UserMovie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +28,5 @@ public interface UserMovieRepository extends JpaRepository<UserMovie, Long> {
                                   @Param("watched") Boolean watched,
                                   @Param("minRating") Double minRating);
 
+    boolean existsByUserAndMovie(User user, Movie movie);
 }

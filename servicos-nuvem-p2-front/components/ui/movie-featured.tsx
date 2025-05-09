@@ -29,7 +29,7 @@ export default function MovieFeatured({ id, title, image, description, rating, w
                         <div className="flex items-center gap-2 text-sm">
                             <div className="flex items-center">
                                 <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span>{rating}/5</span>
+                                <span>{rating}/10</span>
                             </div>
                         </div>
                         <h3 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">{title}</h3>
