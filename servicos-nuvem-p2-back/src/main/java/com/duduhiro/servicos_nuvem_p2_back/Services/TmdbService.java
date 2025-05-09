@@ -9,7 +9,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,8 @@ public class TmdbService {
         String url = String.format("%s/search/movie?api_key=%s&query=%s", apiUrl, apiKey, UriUtils.encode(title, StandardCharsets.UTF_8));
         ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         if(response.getStatusCode().is2xxSuccessful()) {
             JsonNode results = response.getBody().get("results");
             List<Movie> movies = new ArrayList<>();
@@ -39,6 +43,10 @@ public class TmdbService {
                 movie.setDescription(node.get("overview").asText(""));
                 movie.setPosterUrl("https://image.tmdb.org/t/p/w500" + node.get("poster_path").asText(""));
                 movie.setRating(node.get("vote_average").asDouble());
+                String release = node.get("release_date").asText();
+                if (!release.isEmpty()) {
+                    movie.setReleaseDate(LocalDate.parse(release, formatter));
+                }
                 movie.setCreatedAt(LocalDateTime.now());
                 movie.setLastFetchedAt(LocalDateTime.now());
                 movies.add(movie);
@@ -66,5 +74,43 @@ public class TmdbService {
         } else {
             throw new RuntimeException("Failed to fetch movie details from TMDb");
         }
+    }
+
+    private List<Movie> fetchMoviesFromTmdb(String url) {
+        ResponseEntity<JsonNode> response = restTemplate.getForEntity(url, JsonNode.class);
+        List<Movie> movies = new ArrayList<>();
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            JsonNode results = response.getBody().get("results");
+
+            for (JsonNode node : results) {
+                Movie movie = new Movie();
+                movie.setTmdbId(node.get("id").asLong());
+                movie.setTitle(node.get("title").asText(""));
+                movie.setDescription(node.get("overview").asText(""));
+                movie.setPosterUrl("https://image.tmdb.org/t/p/w500" + node.get("poster_path").asText(""));
+                movie.setRating(node.get("vote_average").asDouble());
+
+                String release = node.get("release_date").asText("");
+                if (!release.isEmpty()) {
+                    movie.setReleaseDate(LocalDate.parse(release));
+                }
+
+                movie.setCreatedAt(LocalDateTime.now());
+                movie.setLastFetchedAt(LocalDateTime.now());
+                movies.add(movie);
+            }
+        }
+        return movies;
+    }
+
+    public List<Movie> fetchPopularMovies() {
+        String url = String.format("%s/movie/popular?api_key=%s", apiUrl, apiKey);
+        return fetchMoviesFromTmdb(url);
+    }
+
+    public List<Movie> fetchTrendingMovies() {
+        String url = String.format("%s/trending/movie/week?api_key=%s", apiUrl, apiKey);
+        return fetchMoviesFromTmdb(url);
     }
 }
