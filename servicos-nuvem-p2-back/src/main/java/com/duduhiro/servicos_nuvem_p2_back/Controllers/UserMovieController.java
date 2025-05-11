@@ -2,6 +2,7 @@ package com.duduhiro.servicos_nuvem_p2_back.Controllers;
 
 import com.duduhiro.servicos_nuvem_p2_back.DTOs.AddToWatchlistRequest;
 import com.duduhiro.servicos_nuvem_p2_back.Services.UserMovieService;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,12 @@ public class UserMovieController {
             @RequestParam(required = false) Double minRating
     ) {
         return ResponseEntity.ok(userMovieService.getFilteredWatchlist(userId, title, watched, minRating));
+    }
+
+    @DeleteMapping("/remove/{userId}/{movieId}")
+    public ResponseEntity<?> removeFromWatchlist(@PathVariable Long userId, @PathVariable Long movieId) {
+        userMovieService.removeFromWatchlist(userId, movieId);
+        return ResponseEntity.noContent().build();
     }
 
 }

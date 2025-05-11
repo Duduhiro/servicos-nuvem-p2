@@ -9,6 +9,7 @@ import com.duduhiro.servicos_nuvem_p2_back.Repos.MovieRepository;
 import com.duduhiro.servicos_nuvem_p2_back.Repos.UserMovieRepository;
 import com.duduhiro.servicos_nuvem_p2_back.Repos.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,8 +35,20 @@ public class UserMovieService {
         repo.save(um);
     }
 
-    public List<UserMovie> getFilteredWatchlist(Long userId, String title , Boolean watched, Double minRating) {
-        return repo.findByFilters(userId, title, watched, minRating);
+    @Transactional
+    public void removeFromWatchlist(Long userId, Long movieId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Movie movie = movieRepo.findById(movieId).orElseThrow(() -> new RuntimeException("Movie not found"));
+
+        repo.deleteByUserAndMovie(user, movie);
+    }
+
+    public List<Movie> getFilteredWatchlist(Long userId, String title , Boolean watched, Double minRating) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("USer not found"));
+
+        List<Long> movieIds = repo.findMovieIdsByUserId(user.getId());
+
+        return movieRepo.findAllById(movieIds);
     }
 
 }

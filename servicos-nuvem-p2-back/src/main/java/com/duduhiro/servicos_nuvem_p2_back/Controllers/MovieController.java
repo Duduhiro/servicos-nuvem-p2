@@ -1,9 +1,11 @@
 package com.duduhiro.servicos_nuvem_p2_back.Controllers;
 
+import com.duduhiro.servicos_nuvem_p2_back.DTOs.MovieDTO;
 import com.duduhiro.servicos_nuvem_p2_back.Entities.Movie;
 import com.duduhiro.servicos_nuvem_p2_back.Entities.User;
 import com.duduhiro.servicos_nuvem_p2_back.Repos.UserRepository;
 import com.duduhiro.servicos_nuvem_p2_back.Services.MovieService;
+import org.apache.coyote.Request;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,11 +19,9 @@ import java.util.List;
 public class MovieController {
 
     private final MovieService movieService;
-    private final UserRepository userRepository;
 
     public MovieController(MovieService movieService, UserRepository userRepository) {
         this.movieService = movieService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping("/search")
@@ -31,18 +31,17 @@ public class MovieController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<List<Movie>> getPopularMovies() {
-        return ResponseEntity.ok(movieService.getPopularMovies());
+    public ResponseEntity<List<MovieDTO>> getPopularMovies(@RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(movieService.getPopularMovies(userId));
     }
 
     @GetMapping("/trending")
-    public ResponseEntity<List<Movie>> getTrendingMovies() {
-        return ResponseEntity.ok(movieService.getTrendingMovies());
+    public ResponseEntity<List<MovieDTO>> getTrendingMovies(@RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(movieService.getTrendingMovies(userId));
     }
 
     @GetMapping("/atemporal")
-    public ResponseEntity<List<Movie>> getAtemporalMovies(@RequestParam(required = false) Long userId) {
-        User user = (userId != null) ? userRepository.findById(userId).orElse(null) : null;
-        return ResponseEntity.ok(movieService.getAtemporalMovies(user));
+    public ResponseEntity<List<MovieDTO>> getAtemporalMovies(@RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(movieService.getAtemporalMovies(userId));
     }
 }

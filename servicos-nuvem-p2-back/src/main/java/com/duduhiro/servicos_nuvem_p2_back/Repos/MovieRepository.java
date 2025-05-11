@@ -29,8 +29,16 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("""
         SELECT m FROM Movie m
         ORDER BY m.rating DESC
+        LIMIT 20
     """)
     List<Movie> findTop4ByRatingGreaterThanOrderByRatingDesc(@Param("minRating") double minRating);
+
+    @Query("""
+        SELECT m, CASE WHEN um.id IS NOT NULL THEN TRUE ELSE FALSE END AS inWatchlist
+        FROM Movie m
+        LEFT JOIN UserMovie um ON um.movie.id = m.id AND um.user.id = :userId
+    """)
+    List<Object[]> findMoviesWithWatchlistStatus(@Param("userId") Long userId);
 
     default Movie saveOrUpdateByTmdbId(Movie movie) {
         return findByTmdbId(movie.getTmdbId())

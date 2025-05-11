@@ -8,7 +8,8 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getUserMovies, Movie } from "../services/get-movies";
 
 export default function Page() {
     
@@ -16,70 +17,35 @@ export default function Page() {
     const [minRating, setMinRating] = useState([0])
     const [searchTitle, setSearchTitle] = useState("")
 
-    const movies = [
-        {
-            id: 1,
-            title: "Dune: Part Two",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.8,
-            watched: false,
-        },
-        {
-            id: 3,
-            title: "Poor Things",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.5,
-            watched: true,
-        },
-        {
-            id: 6,
-            title: "Civil War",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.0,
-            watched: false,
-        },
-        {
-            id: 20,
-            title: "Civil War",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.0,
-            watched: false,
-        },
-        {
-            id: 9,
-            title: "Killers of the Flower Moon",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.4,
-            watched: true,
-        },
-        {
-            id: 10,
-            title: "The Holdovers",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.6,
-            watched: false,
-        },
-        {
-            id: 11,
-            title: "Past Lives",
-            image: "/placeholder.svg?height=450&width=300",
-            rating: 4.7,
-            watched: false,
-        },
-    ]
+    const [movies, setMovies] = useState<Movie[]>([]);
+    
+    useEffect(() => {
+        const loadMovies = async () => {
+            try {
+                const allTime = await getUserMovies(1);
+                console.log(allTime)
+                setMovies(allTime);
 
-    const filteredMovies = movies.filter((movie) => {
-        // Filter by watched status
-        if (showWatched !== movie.watched) return false
+            } catch (error) {
+                console.error("Error fetching movies:", error);
+            }
+        }
+        loadMovies();
 
-        // Filter by minimum rating
-        if (movie.rating < minRating[0]) return false
+    }, []);
 
-        // Filter by title search
-        if (searchTitle && !movie.title.toLowerCase().includes(searchTitle.toLowerCase())) return false
+    // const filteredMovies = movies.filter((movie) => {
+    //     // Filter by watched status
+    //     if (showWatched !== movie.watched) return false
 
-        return true
-    })
+    //     // Filter by minimum rating
+    //     if (movie.rating < minRating[0]) return false
+
+    //     // Filter by title search
+    //     if (searchTitle && !movie.title.toLowerCase().includes(searchTitle.toLowerCase())) return false
+
+    //     return true
+    // })
 
     return (
         <div className="px-4 py-6 flex justify-center w-full">
@@ -125,14 +91,14 @@ export default function Page() {
                     </div>
                 </div>
                 <div>
-                    {filteredMovies.length > 0 ? (
+                    {movies.length > 0 ? (
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            {filteredMovies.map((movie) => (
+                            {movies.map((movie) => (
                                 <MovieCard
                                     key={movie.id}
                                     id={movie.id}
                                     title={movie.title}
-                                    image="/placeholder.png"
+                                    image={movie.posterUrl}
                                     rating={movie.rating}
                                     watched={false}
                                 />
