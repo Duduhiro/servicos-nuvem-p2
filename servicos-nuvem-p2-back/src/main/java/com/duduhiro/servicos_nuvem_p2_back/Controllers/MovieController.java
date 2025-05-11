@@ -25,8 +25,8 @@ public class MovieController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Movie>> searchMovies(@RequestParam String title) {
-        List<Movie> results = movieService.searchAndSync(title);
+    public ResponseEntity<List<MovieDTO>> searchMovies(@RequestParam String title, @RequestParam(required = false) Long userId) {
+        List<MovieDTO> results = movieService.searchMovies(title, userId);
         return ResponseEntity.ok(results);
     }
 

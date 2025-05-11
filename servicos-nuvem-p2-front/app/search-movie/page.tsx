@@ -3,7 +3,7 @@
 import Header from "@/components/ui/header";
 import MovieCard from "@/components/ui/movie-card";
 import { useEffect, useState } from "react";
-import { getMovieByName, Movie } from "../services/get-movies";
+import { addUserList, getMovieByName, Movie, removeUserList } from "../services/get-movies";
 import { useRouter, useSearchParams } from "next/navigation";
 
 
@@ -14,28 +14,46 @@ export default function SearchPage() {
     const router = useRouter();
     const movieName = searchParams.get("name") || "";
 
+    const userId = 1
+
+    const loadMovies = async () => {
+        if (movieName.trim() === "") {
+            setMovies([]);
+            return
+        };
+
+        try {
+            const movies = await getMovieByName(movieName, userId);
+            setMovies(movies);
+
+        } catch (error) {
+            console.error("Error fetching movies:", error);
+        }   
+    }
+
     useEffect(() => {
-        const loadMovies = async () => {
-            if (movieName.trim() === "") {
-                setMovies([]);
-                return
-            };
-
-            try {
-                const movies = await getMovieByName(movieName);
-                setMovies(movies);
-
-            } catch (error) {
-                console.error("Error fetching movies:", error);
-            }   
-        }
         loadMovies();
 
-    }, [movieName]);
+    }, []);
 
     const handleSearch = (name: string) => {
         router.push(`/search-movie?name=${encodeURIComponent(name)}`)
     }
+
+    const toggleWatchlist = async (movies: Movie[], movieId: number) => {
+        try {
+            const isInList = movies.find((movie) => movie.id === movieId)?.inWatchlist;
+        
+            if (isInList) {
+                await removeUserList(userId, movieId);
+            } else {
+                await addUserList(userId, movieId);
+            }
+            loadMovies()       
+        } catch (error) {
+            console.error("Error updating watchlist", error)
+        }
+    };
 
     return (
         <div>
@@ -53,7 +71,8 @@ export default function SearchPage() {
                                     title={movie.title}
                                     image={movie.posterUrl}
                                     rating={movie.rating}
-                                    watched={false}
+                                    inWatchlist={movie.inWatchlist}
+                                    onToggle={() => toggleWatchlist(movies, movie.id)}
                                 />
                             ))
                             }

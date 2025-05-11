@@ -24,12 +24,9 @@ public class UserMovieController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserWatchlist(
-            @PathVariable Long userId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Boolean watched,
-            @RequestParam(required = false) Double minRating
+            @PathVariable Long userId
     ) {
-        return ResponseEntity.ok(userMovieService.getFilteredWatchlist(userId, title, watched, minRating));
+        return ResponseEntity.ok(userMovieService.getFilteredWatchlist(userId));
     }
 
     @DeleteMapping("/remove/{userId}/{movieId}")

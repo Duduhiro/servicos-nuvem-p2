@@ -26,38 +26,12 @@ public class MovieService {
         this.userMovieRepo = userMovieRepo;
     }
 
-    public List<Movie> searchAndSync(String title) {
+    public List<MovieDTO> searchMovies(String title, Long userId) {
+        List<Movie> movies = tmdbService.searchMoviesFromApi(title).stream()
+                .map(movieRepo::saveOrUpdateByTmdbId)
+                .collect(Collectors.toList());
 
-        List<Movie> existing = movieRepo.findByTitleContainingIgnoreCase(title);
-
-        boolean needsUpdate = existing.isEmpty() ||
-                existing.stream().anyMatch(m -> m.getLastFetchedAt().isBefore(LocalDateTime.now().minusHours(1)));
-
-
-        if (needsUpdate) {
-
-            List<Movie> fresh = tmdbService.searchMoviesFromApi(title);
-
-            for (Movie m : fresh) {
-                Optional<Movie> existingMovie = movieRepo.findByTmdbId(m.getTmdbId());
-                if(existingMovie.isPresent()) {
-                    Movie update = existingMovie.get();
-                    update.setTitle(m.getTitle());
-                    update.setRating(m.getRating());
-                    update.setDescription(m.getDescription());
-                    update.setPosterUrl(m.getPosterUrl());
-                    update.setBackdropUrl(m.getBackdropUrl());
-                    update.setReleaseDate(m.getReleaseDate());
-                    update.setLastFetchedAt(LocalDateTime.now());
-                    movieRepo.save(update);
-                } else {
-                    m.setLastFetchedAt(LocalDateTime.now());
-                    movieRepo.save(m);
-                }
-            }
-            return movieRepo.findByTitleContainingIgnoreCase(title);
-        }
-        return existing;
+        return mapWithWatchlistStatus(movies, userId);
     }
 
     public List<MovieDTO> getPopularMovies(Long userId) {

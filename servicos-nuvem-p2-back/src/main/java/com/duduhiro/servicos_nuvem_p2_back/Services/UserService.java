@@ -1,7 +1,7 @@
 package com.duduhiro.servicos_nuvem_p2_back.Services;
 
 import com.duduhiro.servicos_nuvem_p2_back.DTOs.LoginRequest;
-import com.duduhiro.servicos_nuvem_p2_back.DTOs.RegisterRequest;
+import com.duduhiro.servicos_nuvem_p2_back.DTOs.UserDTO;
 import com.duduhiro.servicos_nuvem_p2_back.Entities.User;
 import com.duduhiro.servicos_nuvem_p2_back.Entities.UserMovie;
 import com.duduhiro.servicos_nuvem_p2_back.Jwt.JwtUtil;
@@ -10,7 +10,9 @@ import com.duduhiro.servicos_nuvem_p2_back.Repos.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -28,23 +30,39 @@ public class UserService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void register(RegisterRequest req) {
+    public String register(UserDTO userDTO) {
 
-        User user = new User(req.username, req.email, passwordEncoder.encode(req.password));
+        if (userRepo.existsByEmail(userDTO.getEmail())) {
+            throw new RuntimeException("Email already in use");
+        }
+
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userRepo.save(user);
+
+        // Generate JWT token
+        return jwtUtil.generateToken(user);
+
     }
 
-    public String login(LoginRequest req) {
-        User user = userRepo.findByEmail(req.email)
+    public Map<String, Object> login(LoginRequest req) {
+        User user = userRepo.findByEmail(req.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
-        if (!passwordEncoder.matches(req.password, user.getPassword())) {
+
+        if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
-        return jwtUtil.generateToken(user);
-    }
 
-    public List<UserMovie> getWatchlist(Long userId) {
-        return userMovieRepo.findByUserId(userId);
+        String token = jwtUtil.generateToken(user);
+
+        Map<String, Object> loginData = new HashMap<>();
+        loginData.put("token", token);
+        loginData.put("user_id", user.getId());
+        loginData.put("username", user.getUsername());
+
+        return loginData;
     }
 
 }

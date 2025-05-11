@@ -32,6 +32,9 @@ export default function Header({onSearch}: HeaderProps) {
         }
     }
 
+    // const storedUserId = typeof window !== "undefined" ? Number(localStorage.getItem('user_id')) : 0;
+    const storedUserId = 1
+
     return (
         <header className="flex justify-center border-b-[1px] border-b-white">
             <div className="flex justify-between max-w-7xl w-full py-4">

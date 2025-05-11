@@ -5,11 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MovieCard from "@/components/ui/movie-card";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getUserMovies, Movie } from "../services/get-movies";
+import { getUserMovies, Movie, removeUserList } from "../services/get-movies";
 
 export default function Page() {
     
@@ -18,34 +17,49 @@ export default function Page() {
     const [searchTitle, setSearchTitle] = useState("")
 
     const [movies, setMovies] = useState<Movie[]>([]);
+
+    const userId = 0
+
+    const loadMovies = async () => {
+        try {
+            const allTime = await getUserMovies(userId);
+            console.log(allTime)
+            setMovies(allTime);
+
+        } catch (error) {
+            console.error("Error fetching movies:", error);
+        }
+    }
     
     useEffect(() => {
-        const loadMovies = async () => {
-            try {
-                const allTime = await getUserMovies(1);
-                console.log(allTime)
-                setMovies(allTime);
-
-            } catch (error) {
-                console.error("Error fetching movies:", error);
-            }
-        }
         loadMovies();
 
     }, []);
 
-    // const filteredMovies = movies.filter((movie) => {
-    //     // Filter by watched status
-    //     if (showWatched !== movie.watched) return false
+    const toggleWatchlist = async (movieId: number) => {
+        try {
+            await removeUserList(userId, movieId);
+            loadMovies()       
+        } catch (error) {
+            console.error("Error updating watchlist", error)
+        }
+    };
 
-    //     // Filter by minimum rating
-    //     if (movie.rating < minRating[0]) return false
+    const filterMovies = (movies: Movie[]) => {
+        if (movies.length > 0) {
+            return movies.filter((movie) => {
+                if (movie.rating < minRating[0]) return false
 
-    //     // Filter by title search
-    //     if (searchTitle && !movie.title.toLowerCase().includes(searchTitle.toLowerCase())) return false
+                if (searchTitle && !movie.title.toLowerCase().includes(searchTitle.toLowerCase())) return false
 
-    //     return true
-    // })
+                return true
+            })
+        } else {
+            return []
+        }
+    }
+
+    const filteredMovies = filterMovies(movies)
 
     return (
         <div className="px-4 py-6 flex justify-center w-full">
@@ -60,21 +74,6 @@ export default function Page() {
                     <h2 className="mb-4 text-xl font-semibold">Filters</h2>
                     <div className="flex gap-6">
                         <div className="flex flex-col gap-2 w-1/4">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="watched-filter">Show {showWatched ? "Watched" : "Unwatched"}</Label>
-                                <Switch id="watched-filter" checked={showWatched} onCheckedChange={setShowWatched} />
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                {showWatched ? "Showing movies you've already watched" : "Showing movies you haven't watched yet"}
-                            </p>
-                        </div>
-                        <div className="grow flex justify-end">
-                            <div className="w-64 flex flex-col gap-4">
-                                <Label htmlFor="rating-filter">Minimum Rating: {minRating[0]}/5</Label>
-                                <Slider id="rating-filter" min={0} max={5} step={0.1} value={minRating} onValueChange={setMinRating} />
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-2 w-1/4">
                             <Label htmlFor="title-filter">Search by Title</Label>
                             <div className="relative">
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -88,19 +87,28 @@ export default function Page() {
                                 />
                             </div>
                         </div>
+                        <div className="grow flex">
+                            <div className="w-64 flex flex-col gap-4">
+                                <Label htmlFor="rating-filter">Minimum Rating: {minRating[0]}/10</Label>
+                                <div className="flex grow items-center">
+                                    <Slider id="rating-filter" min={0} max={10} step={0.1} value={minRating} onValueChange={setMinRating} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>
                     {movies.length > 0 ? (
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            {movies.map((movie) => (
+                            {filteredMovies.map((movie) => (
                                 <MovieCard
                                     key={movie.id}
                                     id={movie.id}
                                     title={movie.title}
                                     image={movie.posterUrl}
                                     rating={movie.rating}
-                                    watched={false}
+                                    inWatchlist={true}
+                                    onToggle={() => toggleWatchlist(movie.id)}
                                 />
                             ))}
                         </div>

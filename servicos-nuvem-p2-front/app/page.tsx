@@ -9,17 +9,13 @@ import { MovieCardSkeleton, MovieFeaturedSkeleton } from "./skeleton";
 import Header from "@/components/ui/header";
 
 export default function Home() {
-  
-    // const popular = await getPopular();
-    // const trending = await getTrending();
 
     const [popular, setPopular] = useState<Movie[]>([]);
     const [trending, setTrending] = useState<Movie[]>([]);
     const [allTime, setAllTime] = useState<Movie[]>([]);
 
     const [loading, setLoading] = useState(true);
-
-    const userId = 1
+    const [userId, setUserId] = useState<number>(0);
 
     const loadMovies = async () => {
         setLoading(true);
@@ -41,6 +37,7 @@ export default function Home() {
     }
 
     useEffect(() => {
+        setUserId(1);
         loadMovies();
     }, []);
 

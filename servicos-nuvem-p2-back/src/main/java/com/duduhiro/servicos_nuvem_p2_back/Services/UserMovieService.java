@@ -43,8 +43,8 @@ public class UserMovieService {
         repo.deleteByUserAndMovie(user, movie);
     }
 
-    public List<Movie> getFilteredWatchlist(Long userId, String title , Boolean watched, Double minRating) {
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("USer not found"));
+    public List<Movie> getFilteredWatchlist(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Long> movieIds = repo.findMovieIdsByUserId(user.getId());
 

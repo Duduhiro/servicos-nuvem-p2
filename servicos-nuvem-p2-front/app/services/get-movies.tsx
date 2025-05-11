@@ -11,9 +11,9 @@ export type Movie = {
     watched: boolean;
 }
 
-export async function getMovieByName(movie: string) {
+export async function getMovieByName(movie: string, user_id: number) {
     try {
-        const res = await fetch(`http://localhost:8080/api/movies/search?title=${movie}`);
+        const res = await fetch(`http://localhost:8080/api/movies/search?title=${movie}&userId=${user_id}`);
         const data = await res.json()
 
         return data;
