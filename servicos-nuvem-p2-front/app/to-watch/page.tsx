@@ -9,21 +9,23 @@ import { ChevronLeft, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getUserMovies, Movie, removeUserList } from "../services/get-movies";
+import { getCookie } from "cookies-next/client";
 
 export default function Page() {
     
-    const [showWatched, setShowWatched] = useState(false)
     const [minRating, setMinRating] = useState([0])
     const [searchTitle, setSearchTitle] = useState("")
 
     const [movies, setMovies] = useState<Movie[]>([]);
 
-    const userId = 0
+    const UID = getCookie('user_id');
+    const userId = UID ? parseInt(UID as string, 10) : 0;
 
     const loadMovies = async () => {
+
+
         try {
             const allTime = await getUserMovies(userId);
-            console.log(allTime)
             setMovies(allTime);
 
         } catch (error) {
@@ -118,7 +120,6 @@ export default function Page() {
                             <p className="mt-2 text-muted-foreground">Try adjusting your filter settings to see more results.</p>
                             <Button
                                 onClick={() => {
-                                setShowWatched(false)
                                 setMinRating([0])
                                 setSearchTitle("")
                                 }}

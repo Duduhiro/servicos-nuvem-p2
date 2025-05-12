@@ -5,6 +5,7 @@ import MovieCard from "@/components/ui/movie-card";
 import { useEffect, useState } from "react";
 import { addUserList, getMovieByName, Movie, removeUserList } from "../services/get-movies";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getCookie } from "cookies-next/client";
 
 
 export default function SearchPage() {
@@ -14,9 +15,11 @@ export default function SearchPage() {
     const router = useRouter();
     const movieName = searchParams.get("name") || "";
 
-    const userId = 1
+    const UID = getCookie('user_id');
+    const userId = UID ? parseInt(UID as string, 10) : 0;
 
     const loadMovies = async () => {
+
         if (movieName.trim() === "") {
             setMovies([]);
             return

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { login } from "../services/auth";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import { setCookie } from "cookies-next/client";
 
 export default function Page() {
     
@@ -21,6 +22,24 @@ export default function Page() {
 
     function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
         setPassword(event.target.value)
+    }
+
+    async function handleLogin() {
+        const result = await login(username, password)
+
+        if (result) {
+    
+            console.log("Cookies set!")
+            console.log(result)
+        
+            setCookie("token", result.token, {maxAge: 60 * 60 * 24})
+            setCookie("user_id", result.user_id, {maxAge: 60 * 60 * 24})
+            setCookie("username", result.username, {maxAge: 60 * 60 * 24})
+            redirect("/")
+        } else {
+            console.log('fuck')
+        }
+
     }
 
     return (
@@ -50,13 +69,10 @@ export default function Page() {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <Label htmlFor="password">Password</Label>
-                                    <Link href="/forgot-password" className="text-xs text-muted-foreground hover:underline">
-                                        Forgot password?
-                                    </Link>
                                 </div>
                                 <Input id="password" onChange={(event) => handlePasswordChange(event)} type="password" />
                             </div>
-                            <Button className="w-full" onClick={() => login(username, password)}>Sign In</Button>
+                            <Button className="w-full" onClick={handleLogin}>Sign In</Button>
                         </div>
                     </TabsContent>
                     <TabsContent value="register">

@@ -1,5 +1,8 @@
 'use server'
 
+import { getCookie } from "cookies-next";
+import { cookies } from "next/headers";
+
 export type Movie = {
     id: number;
     title: string;
@@ -59,8 +62,11 @@ export async function getAllTime(user_id: number) {
 }
 
 export async function getUserMovies(id: number) {
+    const token = await getCookie('token', { cookies });
     try {
-        const res = await fetch(`http://localhost:8080/api/watchlist/${id}`);
+        const res = await fetch(`http://localhost:8080/api/watchlist/${id}`, {
+            headers: {Authorization: token ? `Bearer ${token}` : ""}
+        });
         const data = await res.json()
 
         return data
@@ -70,10 +76,13 @@ export async function getUserMovies(id: number) {
 }
 
 export async function addUserList(user_id: number, movie_id: number) {
+
+    const token = await getCookie('token', { cookies });
+
     try {
         await fetch('http://localhost:8080/api/watchlist/add', {
             method: "POST",
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : ""},
             body: JSON.stringify({
                 "userId": user_id,
                 "movieId": movie_id,
@@ -87,10 +96,16 @@ export async function addUserList(user_id: number, movie_id: number) {
 }
 
 export async function removeUserList(user_id: number, movie_id: number) {
+    
+    const token = await getCookie('token', { cookies });
+    
     try {
-        await fetch(`http://localhost:8080/api/watchlist/remove/${user_id}/${movie_id}`, {
-            method: "DELETE"
+        const response = await fetch(`http://localhost:8080/api/watchlist/remove/${user_id}/${movie_id}`, {
+            method: "DELETE",
+            headers: {Authorization: token ? `Bearer ${token}` : ""}
         })
+        console.log(response)
+
     } catch (error) {
         console.log(error)
     }

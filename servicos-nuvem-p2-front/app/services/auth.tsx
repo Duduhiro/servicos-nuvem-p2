@@ -1,11 +1,12 @@
 'use server'
 
+import { NextResponse } from "next/server";
+import { setCookie } from 'cookies-next'
+
 export async function login(email: string, password: string) {
+    
     try {
         
-        console.log(email)
-        console.log(password)
-
         const response = await fetch('http://localhost:8080/api/users/login', {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -16,6 +17,11 @@ export async function login(email: string, password: string) {
         });
         
         const data = await response.json()
+    
+        if (!response.ok) {
+            return NextResponse.json({ error: data.error }, { status: response.status });
+        }
+    
         return data
     
     } catch (error) {

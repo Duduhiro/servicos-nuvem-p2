@@ -7,6 +7,7 @@ import { addUserList, getAllTime, getPopular, getTrending, Movie, removeUserList
 import { useEffect, useState } from "react";
 import { MovieCardSkeleton, MovieFeaturedSkeleton } from "./skeleton";
 import Header from "@/components/ui/header";
+import { getCookie } from "cookies-next";
 
 export default function Home() {
 
@@ -17,16 +18,23 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<number>(0);
 
+
     const loadMovies = async () => {
+        
+        const UID = getCookie('user_id');
+        const user_id = UID ? parseInt(UID as string, 10) : 0;
+
+        setUserId(user_id)
+
         setLoading(true);
         try {
-            const popular = await getPopular(userId);
+            const popular = await getPopular(user_id);
             setPopular(popular);
 
-            const trending = await getTrending(userId);
+            const trending = await getTrending(user_id);
             setTrending(trending);
 
-            const allTime = await getAllTime(userId);
+            const allTime = await getAllTime(user_id);
             setAllTime(allTime);
 
         } catch (error) {
@@ -37,7 +45,7 @@ export default function Home() {
     }
 
     useEffect(() => {
-        setUserId(1);
+
         loadMovies();
     }, []);
 
@@ -45,7 +53,10 @@ export default function Home() {
         try {
             const isInList = movies.find((movie) => movie.id === movieId)?.inWatchlist;
         
+            console.log("User ID toggle", userId)
+        
             if (isInList) {
+                console.log("deleting")
                 await removeUserList(userId, movieId);
             } else {
                 await addUserList(userId, movieId);

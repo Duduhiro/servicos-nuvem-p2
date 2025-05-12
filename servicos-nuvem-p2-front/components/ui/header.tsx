@@ -1,20 +1,23 @@
 'use client'
 
-import { BookmarkPlus, Search, User } from "lucide-react";
+import { BookmarkPlus, LogOut, Search, User } from "lucide-react";
 import { Input } from "./input";
 import { Button } from "./button";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { deleteCookie, getCookie } from "cookies-next/client";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./alert-dialog";
 
 interface HeaderProps {
     onSearch?: (name: string) => void;
 }
 
-export default function Header({onSearch}: HeaderProps) {
-    
+export default function Header({ onSearch }: HeaderProps) {
+
     const router = useRouter();
     const [movieName, setMovieName] = useState('');
+    const [userId, setUserId] = useState(0);
 
     const updateName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMovieName(event.target.value)
@@ -32,8 +35,24 @@ export default function Header({onSearch}: HeaderProps) {
         }
     }
 
-    // const storedUserId = typeof window !== "undefined" ? Number(localStorage.getItem('user_id')) : 0;
-    const storedUserId = 1
+    function logout() {
+        deleteCookie('token')
+        deleteCookie('user_id')
+        deleteCookie('username')
+
+        console.log('Logout')
+        router.push("/")
+
+        setUserId(0);
+    }
+
+    useEffect(() => {
+
+        const UID = getCookie('user_id');
+        setUserId(UID ? parseInt(UID as string, 10) : 0)
+
+    }, []);
+
 
     return (
         <header className="flex justify-center border-b-[1px] border-b-white">
@@ -45,27 +64,58 @@ export default function Header({onSearch}: HeaderProps) {
                     </Link>
                 </div>
                 <div className="flex items-center gap-3">
+                    <Link href="/to-watch">
+                        {
+                            userId !== 0 ? (
+                                <Button variant="ghost" size="sm" className="rounded-sm">
+                                    My List
+                                </Button>
+                            ) : (
+                                <></>
+                            )
+                        }
+                    </Link>
                     <form className="relative w-full max-w-sm" onSubmit={handleSearch}>
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                            id="search" 
-                            onChange={(event) => updateName(event)} 
+                        <Input
+                            id="search"
+                            onChange={(event) => updateName(event)}
                             value={movieName}
-                            type="search" 
-                            placeholder="Search movies..." 
+                            type="search"
+                            placeholder="Search movies..."
                             className="w-full bg-background pl-8 rounded-sm" />
                     </form>
-                    <Link href="/to-watch">
-                        <Button variant="ghost" size="sm" className="rounded-sm">
-                            My List
-                        </Button>
-                    </Link>
-                    <Link href="/login">
-                        <Button variant="outline" size="sm" className="gap-2 rounded-sm">
-                            <User className="h-4 w-4" />
-                            Login
-                        </Button>
-                    </Link>
+                    {
+                        userId === 0 ? (
+                            <Link href="/login">
+                                <Button variant="outline" size="sm" className="gap-2 rounded-sm">
+                                    <User className="h-4 w-4" />
+                                    Login
+                                </Button>
+                            </Link>
+                        ) : (
+                            <AlertDialog>
+                                <AlertDialogTrigger>
+                                    <div className="flex rounded-sm border-[1px] items-center gap-2 font-semibold py-1 px-3 hover:bg-neutral-900 cursor-pointer">
+                                        <LogOut className="h-4 w-4" />
+                                        Logout
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Login out
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                        <AlertDialogAction className="cursor-pointer" onClick={logout}>Logout</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )
+                    }
                 </div>
             </div>
         </header>
