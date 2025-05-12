@@ -6,15 +6,25 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { login } from "../services/auth";
+import { login, register } from "../services/auth";
 import { useState } from "react";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { setCookie } from "cookies-next/client";
 
 export default function Page() {
     
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [loginError, setLoginError] = useState<string>("");
+
+    const [remail, setREmail] = useState("")
+    const [rusername, setRUsername] = useState("")
+    const [rpassword, setRPassword] = useState("")
+    const [registerError, setRegisterError] = useState<string>("");
+
+    const [activeTab, setActiveTab] = useState<"login" | "register">("login")
+
+    const router = useRouter();
 
     function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
         setUsername(event.target.value)
@@ -24,8 +34,22 @@ export default function Page() {
         setPassword(event.target.value)
     }
 
+    function handleRUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setRUsername(event.target.value)
+    }
+
+    function handleREmailChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setREmail(event.target.value)
+    }
+
+    function handleRPasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setRPassword(event.target.value)
+    }
+
     async function handleLogin() {
         const result = await login(username, password)
+
+        setLoginError("")
 
         if (result) {
     
@@ -37,9 +61,36 @@ export default function Page() {
             setCookie("username", result.username, {maxAge: 60 * 60 * 24})
             redirect("/")
         } else {
-            console.log('fuck')
+            setLoginError("Username/Password incorrect")
         }
 
+    }
+
+    async function handleRegister() {
+        
+        setRegisterError("")
+        
+        if (remail == "" || rusername == "" || rpassword == "") {
+            setRegisterError("Fill all fields")
+            return
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const validEmail = emailRegex.test(remail);
+
+        if (!validEmail) {
+            setRegisterError("Email Invalid!")
+            return
+        }
+
+        const result = await register(rusername, remail, rpassword);
+
+        if (result) {
+            setActiveTab('login')
+            router.refresh()
+        } else {
+            setRegisterError("Error when creating account")
+        }
     }
 
     return (
@@ -55,7 +106,7 @@ export default function Page() {
                     <h1 className="text-2xl font-semibold tracking-tight">Welcome to WannaWatch</h1>
                     <p className="text-sm text-muted-foreground">Sign in to your account or create a new one</p>
                 </div>
-                <Tabs defaultValue="login" className="w-full">
+                <Tabs defaultValue="login" value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="login">Login</TabsTrigger>
                         <TabsTrigger value="register">Register</TabsTrigger>
@@ -73,23 +124,35 @@ export default function Page() {
                                 <Input id="password" onChange={(event) => handlePasswordChange(event)} type="password" />
                             </div>
                             <Button className="w-full" onClick={handleLogin}>Sign In</Button>
+                            {loginError && (
+                                <div className="w-full flex justify-center"> 
+                                    <p className="text-red-500 text-sm mt-2 font-semibold">{loginError}</p>
+                                </div>
+
+                            )}
                         </div>
                     </TabsContent>
                     <TabsContent value="register">
                         <div className="space-y-4">
                             <div className="space-y-2">
+                                <Label htmlFor="new-username">Username</Label>
+                                <Input id="new-username" type="text" onChange={(event) => handleRUsernameChange(event)}/>
+                            </div>
+                            <div className="space-y-2">
                                 <Label htmlFor="new-email">Email</Label>
-                                <Input id="new-email" placeholder="name@example.com" type="email" />
+                                <Input id="new-email" placeholder="name@example.com" onChange={(event) => handleREmailChange(event)} type="email" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="new-password">Password</Label>
-                                <Input id="new-password" type="password" />
+                                <Input id="new-password" onChange={(event) => handleRPasswordChange(event)} type="password" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="confirm-password">Confirm Password</Label>
-                                <Input id="confirm-password" type="password" />
-                            </div>
-                            <Button className="w-full">Create Account</Button>
+                            <Button className="w-full" onClick={handleRegister}>Create Account</Button>
+                            {registerError && (
+                                <div className="w-full flex justify-center"> 
+                                    <p className="text-red-500 text-sm mt-2 font-semibold">{registerError}</p>
+                                </div>
+
+                            )}
                         </div>
                     </TabsContent>
                 </Tabs>

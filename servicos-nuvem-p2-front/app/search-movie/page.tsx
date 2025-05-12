@@ -37,7 +37,7 @@ export default function SearchPage() {
     useEffect(() => {
         loadMovies();
 
-    }, []);
+    }, [movieName]);
 
     const handleSearch = (name: string) => {
         router.push(`/search-movie?name=${encodeURIComponent(name)}`)
